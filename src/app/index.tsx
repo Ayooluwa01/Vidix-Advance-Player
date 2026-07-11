@@ -1,6 +1,7 @@
-// src/app/tabs/index.tsx
+import { getFirstLaunch } from "@/store/mmkv/storage";
 import { Redirect } from "expo-router";
 
-export default function TabsIndex() {
-  return <Redirect href="/tabs/home" />;
+export default function Index() {
+  const showOnboarding = getFirstLaunch() !== false;
+  return <Redirect href={showOnboarding ? "/(onboarding)" : "/(splash)"} />;
 }
