@@ -1,7 +1,7 @@
 import { getColor } from "@/constants/colors";
 import { storage } from "@/store/mmkv/storage";
 import { useThemeStore } from "@/store/useThemeStore";
-import { HasMediaPermission } from "@/utils/usePermissions";
+import { useVideoStore } from "@/store/video-scanner";
 import { Stack } from "expo-router";
 import { useEffect } from "react";
 import {
@@ -16,21 +16,21 @@ function AppNavigator() {
   const { width, height } = useWindowDimensions();
   const { theme } = useThemeStore();
   const bgColor = getColor(theme, "background");
-
+  const loadVideos = useVideoStore((state) => state.loadVideos);
+  const loaded = useVideoStore((state) => state.loaded);
   useEffect(() => {
     storage.set("device-height", height);
     storage.set("device-width", width);
   }, [width, height]);
 
+  // run silently in the background
   useEffect(() => {
     const task = InteractionManager.runAfterInteractions(async () => {
-      const hasPermission = await HasMediaPermission();
-
-      if (!hasPermission) {
-        console.log("Media permission denied");
+      // if no video has been loaded
+      if (!loaded) {
+        loadVideos();
       }
     });
-
     return () => task.cancel();
   }, []);
 
