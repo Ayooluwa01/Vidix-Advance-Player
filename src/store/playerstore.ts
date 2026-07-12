@@ -1,7 +1,180 @@
+// import { PhotoIdentifier } from "@react-native-camera-roll/camera-roll";
+// import { create } from "zustand";
+
+// interface PlayerStore {
+//   // Playlist
+//   playlist: PhotoIdentifier[];
+//   currentVideo: PhotoIdentifier | null;
+//   currentIndex: number;
+
+//   // Playback
+//   isPlaying: boolean;
+//   duration: number;
+//   currentTime: number;
+//   buffered: number;
+//   playbackRate: number;
+
+//   // UI
+//   controlsVisible: boolean;
+//   locked: boolean;
+//   fullscreen: boolean;
+
+//   // Actions
+//   setPlaylist: (videos: PhotoIdentifier[], startIndex?: number) => void;
+//   setCurrentVideo: (video: PhotoIdentifier, index: number) => void;
+
+//   play: () => void;
+//   pause: () => void;
+
+//   next: () => void;
+//   previous: () => void;
+
+//   setCurrentTime: (time: number) => void;
+//   setDuration: (duration: number) => void;
+//   setBuffered: (buffered: number) => void;
+
+//   seek: (time: number) => void;
+//   setPlaybackRate: (rate: number) => void;
+//   toggleControls: () => void;
+//   toggleFullscreen: () => void;
+//   toggleLock: () => void;
+
+//   resetPlayer: () => void;
+// }
+
+// export const usePlayerStore = create<PlayerStore>((set, get) => ({
+//   // Playlist
+//   playlist: [],
+//   currentVideo: null,
+//   currentIndex: 0,
+
+//   // Playback
+//   isPlaying: true,
+//   duration: 0,
+//   currentTime: 0,
+//   buffered: 0,
+//   playbackRate: 1,
+
+//   // UI
+//   controlsVisible: false,
+//   locked: false,
+//   fullscreen: false,
+
+//   setPlaylist: (videos, startIndex = 0) =>
+//     set({
+//       playlist: videos,
+//       currentIndex: startIndex,
+//       currentVideo: videos[startIndex] ?? null,
+//       currentTime: 0,
+//     }),
+
+//   setCurrentVideo: (video, index) =>
+//     set({
+//       currentVideo: video,
+//       currentIndex: index,
+//       currentTime: 0,
+//     }),
+
+//   play: () =>
+//     set({
+//       isPlaying: true,
+//     }),
+
+//   pause: () =>
+//     set({
+//       isPlaying: false,
+//     }),
+
+//   next: () => {
+//     const { playlist, currentIndex } = get();
+//     if (currentIndex >= playlist.length - 1) return;
+//     set({
+//       currentIndex: currentIndex + 1,
+//       currentVideo: playlist[currentIndex + 1],
+//       currentTime: 0,
+//       isPlaying: true,
+//     });
+//   },
+
+//   previous: () => {
+//     const { playlist, currentIndex } = get();
+//     if (currentIndex <= 0) return;
+//     set({
+//       currentIndex: currentIndex - 1,
+//       currentVideo: playlist[currentIndex - 1],
+//       currentTime: 0,
+//       isPlaying: true,
+//     });
+//   },
+
+//   setCurrentTime: (time) =>
+//     set({
+//       currentTime: time,
+//     }),
+
+//   setDuration: (duration) =>
+//     set({
+//       duration,
+//     }),
+
+//   setBuffered: (buffered) =>
+//     set({
+//       buffered,
+//     }),
+
+//   seek: (time) =>
+//     set({
+//       currentTime: time,
+//     }),
+
+//   setPlaybackRate: (rate) =>
+//     set({
+//       playbackRate: rate,
+//     }),
+
+//   toggleControls: () =>
+//     set((state) => ({
+//       controlsVisible: !state.controlsVisible,
+//     })),
+
+//   toggleFullscreen: () =>
+//     set((state) => ({
+//       fullscreen: !state.fullscreen,
+//     })),
+
+//   toggleLock: () =>
+//     set((state) => ({
+//       locked: !state.locked,
+//     })),
+
+//   resetPlayer: () =>
+//     set({
+//       playlist: [],
+//       currentVideo: null,
+//       currentIndex: 0,
+//       isPlaying: false,
+//       duration: 0,
+//       currentTime: 0,
+//       buffered: 0,
+//       playbackRate: 1,
+//       controlsVisible: true,
+//       locked: false,
+//       fullscreen: false,
+//     }),
+// }));
+
 import { PhotoIdentifier } from "@react-native-camera-roll/camera-roll";
+import { VideoRef } from "react-native-video";
 import { create } from "zustand";
 
 interface PlayerStore {
+  // ref
+  playerRef: React.RefObject<VideoRef> | null;
+  setPlayerRef: (ref: React.RefObject<VideoRef>) => void;
+
+  seekTo: (time: number) => void;
+  setMute?: () => void;
+
   // Playlist
   playlist: PhotoIdentifier[];
   currentVideo: PhotoIdentifier | null;
@@ -11,8 +184,11 @@ interface PlayerStore {
   isPlaying: boolean;
   duration: number;
   currentTime: number;
+  sliderValue: number;
   buffered: number;
   playbackRate: number;
+  isSeeking: boolean;
+  mute: boolean;
 
   // UI
   controlsVisible: boolean;
@@ -28,13 +204,17 @@ interface PlayerStore {
 
   next: () => void;
   previous: () => void;
-
   setCurrentTime: (time: number) => void;
+  setSliderValue: (time: number) => void;
   setDuration: (duration: number) => void;
   setBuffered: (buffered: number) => void;
 
+  startSeeking: () => void;
+  stopSeeking: () => void;
+
   seek: (time: number) => void;
   setPlaybackRate: (rate: number) => void;
+
   toggleControls: () => void;
   toggleFullscreen: () => void;
   toggleLock: () => void;
@@ -43,17 +223,22 @@ interface PlayerStore {
 }
 
 export const usePlayerStore = create<PlayerStore>((set, get) => ({
+  // ref
+  playerRef: null,
   // Playlist
   playlist: [],
   currentVideo: null,
   currentIndex: 0,
+  mute: false,
 
   // Playback
   isPlaying: true,
   duration: 0,
   currentTime: 0,
+  sliderValue: 0,
   buffered: 0,
   playbackRate: 1,
+  isSeeking: false,
 
   // UI
   controlsVisible: false,
@@ -66,6 +251,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
       currentIndex: startIndex,
       currentVideo: videos[startIndex] ?? null,
       currentTime: 0,
+      sliderValue: 0,
     }),
 
   setCurrentVideo: (video, index) =>
@@ -73,43 +259,69 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
       currentVideo: video,
       currentIndex: index,
       currentTime: 0,
+      sliderValue: 0,
     }),
 
-  play: () =>
+  setPlayerRef: (ref) =>
     set({
-      isPlaying: true,
+      playerRef: ref,
     }),
 
-  pause: () =>
+  seekTo: (time) => {
+    const { playerRef } = get();
+
+    playerRef?.current?.seek(time);
     set({
-      isPlaying: false,
-    }),
+      currentTime: time,
+
+      sliderValue: time,
+    });
+  },
+
+  play: () => set({ isPlaying: true }),
+
+  pause: () => set({ isPlaying: false }),
 
   next: () => {
     const { playlist, currentIndex } = get();
+
     if (currentIndex >= playlist.length - 1) return;
+
     set({
       currentIndex: currentIndex + 1,
       currentVideo: playlist[currentIndex + 1],
       currentTime: 0,
+      sliderValue: 0,
       isPlaying: true,
     });
   },
 
   previous: () => {
     const { playlist, currentIndex } = get();
+
     if (currentIndex <= 0) return;
+
     set({
       currentIndex: currentIndex - 1,
       currentVideo: playlist[currentIndex - 1],
       currentTime: 0,
+      sliderValue: 0,
       isPlaying: true,
     });
   },
 
   setCurrentTime: (time) =>
+    set((state) => {
+      if (state.isSeeking) return state;
+
+      return {
+        currentTime: time,
+      };
+    }),
+
+  setSliderValue: (time) =>
     set({
-      currentTime: time,
+      sliderValue: time,
     }),
 
   setDuration: (duration) =>
@@ -122,9 +334,21 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
       buffered,
     }),
 
+  startSeeking: () =>
+    set((state) => ({
+      isSeeking: true,
+      sliderValue: state.currentTime,
+    })),
+
+  stopSeeking: () =>
+    set({
+      isSeeking: false,
+    }),
+
   seek: (time) =>
     set({
       currentTime: time,
+      sliderValue: time,
     }),
 
   setPlaybackRate: (rate) =>
@@ -137,6 +361,23 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
       controlsVisible: !state.controlsVisible,
     })),
 
+  setMute: () => {
+    const { playerRef, mute } = get();
+    // has been muted true numute
+    if (mute) {
+      set((state) => ({
+        // turning to false
+        mute: !state.mute,
+      }));
+      playerRef?.current.setVolume(0);
+    } else {
+      set((state) => ({
+        // turning to true
+        mute: !state.mute,
+      }));
+      playerRef?.current.setVolume(1);
+    }
+  },
   toggleFullscreen: () =>
     set((state) => ({
       fullscreen: !state.fullscreen,
@@ -155,8 +396,10 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
       isPlaying: false,
       duration: 0,
       currentTime: 0,
+      sliderValue: 0,
       buffered: 0,
       playbackRate: 1,
+      isSeeking: false,
       controlsVisible: true,
       locked: false,
       fullscreen: false,

@@ -1,7 +1,6 @@
 import VideoControl from "@/features/videoplayer/components/video-controls";
 import { usePlayerStore } from "@/store/playerstore";
 import { useSettingsStore } from "@/store/zustand/useSettings";
-import * as ScreenOrientation from "expo-screen-orientation";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
@@ -22,9 +21,9 @@ const bufferConfig = {
 };
 
 const VideoPlayer = () => {
-  const videoRef = useRef<VideoRef>(null);
   const [isPipActive, setIsPipActive] = useState(false);
   const { playback } = useSettingsStore();
+  const videoRef = useRef<VideoRef>(null);
 
   const {
     currentVideo,
@@ -36,7 +35,9 @@ const VideoPlayer = () => {
     setBuffered,
     pause,
     play,
+    seek,
     next,
+    setPlayerRef,
   } = usePlayerStore(
     useShallow((s) => ({
       currentVideo: s.currentVideo,
@@ -49,16 +50,13 @@ const VideoPlayer = () => {
       pause: s.pause,
       play: s.play,
       next: s.next,
+      seek: s.seek,
+      setPlayerRef: s.setPlayerRef,
     })),
   );
 
   useEffect(() => {
-    ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
-    return () => {
-      ScreenOrientation.lockAsync(
-        ScreenOrientation.OrientationLock.PORTRAIT_UP,
-      );
-    };
+    setPlayerRef(videoRef);
   }, []);
 
   const handleLoad = useCallback(
@@ -70,14 +68,19 @@ const VideoPlayer = () => {
 
   const handleProgress = useCallback(
     (data: OnProgressData) => {
-      setCurrentTime(data.currentTime);
+      const { isSeeking } = usePlayerStore.getState();
+
+      if (!isSeeking) {
+        setCurrentTime(data.currentTime);
+      }
+
       setBuffered(data.playableDuration);
     },
     [setCurrentTime, setBuffered],
   );
 
   const handleBuffer = useCallback((data: OnBufferData) => {
-    if (__DEV__) console.log("Buffering:", data.isBuffering);
+    // if (__DEV__) console.log("Buffering:", data.isBuffering);
   }, []);
 
   const handleEnd = useCallback(() => {
@@ -89,26 +92,22 @@ const VideoPlayer = () => {
       const { currentTime, duration, setCurrentTime } =
         usePlayerStore.getState();
       const newTime = Math.min(currentTime + 10, duration);
-      videoRef.current?.seek(newTime);
-      setCurrentTime(newTime);
+      usePlayerStore.getState().seekTo(newTime);
     }
     if (playback.skipForwardInterval === "30s") {
       const { currentTime, setCurrentTime } = usePlayerStore.getState();
       const newTime = Math.max(currentTime - 30, 0);
-      videoRef.current?.seek(newTime);
-      setCurrentTime(newTime);
+      usePlayerStore.getState().seekTo(newTime);
     }
     if (playback.skipForwardInterval === "5s") {
       const { currentTime, setCurrentTime } = usePlayerStore.getState();
       const newTime = Math.max(currentTime - 5, 0);
-      videoRef.current?.seek(newTime);
-      setCurrentTime(newTime);
+      usePlayerStore.getState().seekTo(newTime);
     }
     if (playback.skipForwardInterval === "60s") {
       const { currentTime, setCurrentTime } = usePlayerStore.getState();
       const newTime = Math.max(currentTime - 60, 0);
-      videoRef.current?.seek(newTime);
-      setCurrentTime(newTime);
+      usePlayerStore.getState().seekTo(newTime);
     }
   }, [playback.skipForwardInterval]);
 
@@ -116,26 +115,22 @@ const VideoPlayer = () => {
     if (playback.skipBackwardInterval === "10s") {
       const { currentTime, setCurrentTime } = usePlayerStore.getState();
       const newTime = Math.max(currentTime - 10, 0);
-      videoRef.current?.seek(newTime);
-      setCurrentTime(newTime);
+      usePlayerStore.getState().seekTo(newTime);
     }
     if (playback.skipBackwardInterval === "30s") {
       const { currentTime, setCurrentTime } = usePlayerStore.getState();
       const newTime = Math.max(currentTime - 30, 0);
-      videoRef.current?.seek(newTime);
-      setCurrentTime(newTime);
+      usePlayerStore.getState().seekTo(newTime);
     }
     if (playback.skipBackwardInterval === "5s") {
       const { currentTime, setCurrentTime } = usePlayerStore.getState();
       const newTime = Math.max(currentTime - 5, 0);
-      videoRef.current?.seek(newTime);
-      setCurrentTime(newTime);
+      usePlayerStore.getState().seekTo(newTime);
     }
     if (playback.skipBackwardInterval === "60s") {
       const { currentTime, setCurrentTime } = usePlayerStore.getState();
       const newTime = Math.max(currentTime - 10, 0);
-      videoRef.current?.seek(newTime);
-      setCurrentTime(newTime);
+      usePlayerStore.getState().seekTo(newTime);
     }
   }, [playback.skipBackwardInterval]);
 

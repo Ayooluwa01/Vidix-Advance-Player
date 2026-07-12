@@ -49,7 +49,7 @@ function VideoCard({ item, index, onPress, onMenuPress }: VideoCardProps) {
       onPress(item);
       return;
     }
-
+    console.log(video);
     const videos = useVideoStore.getState().videos;
 
     setPlaylist(videos, index);
@@ -141,7 +141,6 @@ const styles = StyleSheet.create({
   blur: {
     borderRadius: 20,
     backgroundColor: "transparent",
-    borderWidth: 1,
   },
 
   imageContainer: {
@@ -167,11 +166,11 @@ const styles = StyleSheet.create({
   },
 
   footer: {
-    marginTop: 12,
     flexDirection: "row",
-    alignItems: "center",
     justifyContent: "space-between",
-    padding: 12,
+    marginLeft: 2,
+    marginVertical: 7,
+    marginTop: 2,
   },
 
   left: {
