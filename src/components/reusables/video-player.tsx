@@ -92,10 +92,46 @@ const VideoPlayer = () => {
       videoRef.current?.seek(newTime);
       setCurrentTime(newTime);
     }
+    if (playback.skipForwardInterval === "30s") {
+      const { currentTime, setCurrentTime } = usePlayerStore.getState();
+      const newTime = Math.max(currentTime - 30, 0);
+      videoRef.current?.seek(newTime);
+      setCurrentTime(newTime);
+    }
+    if (playback.skipForwardInterval === "5s") {
+      const { currentTime, setCurrentTime } = usePlayerStore.getState();
+      const newTime = Math.max(currentTime - 5, 0);
+      videoRef.current?.seek(newTime);
+      setCurrentTime(newTime);
+    }
+    if (playback.skipForwardInterval === "60s") {
+      const { currentTime, setCurrentTime } = usePlayerStore.getState();
+      const newTime = Math.max(currentTime - 60, 0);
+      videoRef.current?.seek(newTime);
+      setCurrentTime(newTime);
+    }
   }, [playback.skipForwardInterval]);
 
   const onBackward = useCallback(() => {
     if (playback.skipBackwardInterval === "10s") {
+      const { currentTime, setCurrentTime } = usePlayerStore.getState();
+      const newTime = Math.max(currentTime - 10, 0);
+      videoRef.current?.seek(newTime);
+      setCurrentTime(newTime);
+    }
+    if (playback.skipBackwardInterval === "30s") {
+      const { currentTime, setCurrentTime } = usePlayerStore.getState();
+      const newTime = Math.max(currentTime - 30, 0);
+      videoRef.current?.seek(newTime);
+      setCurrentTime(newTime);
+    }
+    if (playback.skipBackwardInterval === "5s") {
+      const { currentTime, setCurrentTime } = usePlayerStore.getState();
+      const newTime = Math.max(currentTime - 5, 0);
+      videoRef.current?.seek(newTime);
+      setCurrentTime(newTime);
+    }
+    if (playback.skipBackwardInterval === "60s") {
       const { currentTime, setCurrentTime } = usePlayerStore.getState();
       const newTime = Math.max(currentTime - 10, 0);
       videoRef.current?.seek(newTime);
@@ -148,9 +184,9 @@ const VideoPlayer = () => {
               setIsPipActive(false)
             }
           />
-          <VideoControl foward={onFoward} backward={onBackward} />
         </View>
       </GestureDetector>
+      <VideoControl foward={onFoward} backward={onBackward} />
     </View>
   );
 };
