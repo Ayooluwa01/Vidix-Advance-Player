@@ -27,60 +27,81 @@ function VideoControl({ foward, backward }: VideoControlProps) {
     );
 
   return (
-    <AnimatePresence>
-      {controlsVisible && (
-        <MotiView
-          from={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ type: "timing", duration: 220 }}
-          style={styles.overlay}
-        >
-          {/* ---------- BOTTOM ---------- */}
+    <>
+      <View
+        style={{
+          position: "absolute",
+          width: "100%",
+          height: "80%",
+          pointerEvents: "none",
+          top: 0,
+          justifyContent: "space-between",
+        }}
+      />
+      <AnimatePresence>
+        {controlsVisible && (
           <MotiView
-            from={{ opacity: 0, translateY: 35 }}
-            animate={{ opacity: 1, translateY: 0 }}
-            exit={{ opacity: 0, translateY: 35 }}
-            style={[
-              styles.bottomContainer,
-              { paddingBottom: insets.bottom + 12 },
-            ]}
+            from={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ type: "timing", duration: 220 }}
+            style={styles.overlay}
           >
-            <SeekBar />
+            {/* ---------- BOTTOM ---------- */}
+            <MotiView
+              from={{ opacity: 0, translateY: 35 }}
+              animate={{ opacity: 1, translateY: 0 }}
+              exit={{ opacity: 0, translateY: 35 }}
+              style={[
+                {
+                  paddingHorizontal: 12,
+                  gap: 2,
+                  bottom: insets.bottom + 2,
+                  position: "absolute",
+                  width: "100%",
+                },
+              ]}
+            >
+              <SeekBar />
 
-            {/* Bottom Buttons */}
-            <View style={styles.bottomButtons}>
-              <MotiView
-                from={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                style={styles.centerControls}
-              >
-                <TouchableOpacity onPress={backward} hitSlop={10}>
-                  <Ionicons name="play-skip-back" color="white" size={22} />
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={styles.playButton}
-                  onPress={isPlaying ? pause : play}
-                  hitSlop={10}
+              {/* Bottom Buttons */}
+              <View style={styles.bottomButtons}>
+                <MotiView
+                  from={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  style={styles.centerControls}
                 >
-                  <FontAwesome
-                    name={isPlaying ? "pause" : "play"}
-                    size={22}
-                    color="white"
-                  />
-                </TouchableOpacity>
+                  <TouchableOpacity onPress={backward} hitSlop={10}>
+                    <Ionicons name="play-skip-back" color="white" size={18} />
+                  </TouchableOpacity>
 
-                <TouchableOpacity onPress={foward} hitSlop={10}>
-                  <Ionicons name="play-skip-forward" color="white" size={22} />
-                </TouchableOpacity>
-              </MotiView>
-            </View>
+                  <TouchableOpacity
+                    style={styles.playButton}
+                    onPress={isPlaying ? pause : play}
+                    hitSlop={10}
+                  >
+                    <FontAwesome
+                      name={isPlaying ? "pause" : "play"}
+                      size={18}
+                      color="white"
+                    />
+                  </TouchableOpacity>
+
+                  <TouchableOpacity onPress={foward} hitSlop={10}>
+                    <Ionicons
+                      name="play-skip-forward"
+                      color="white"
+                      size={18}
+                    />
+                  </TouchableOpacity>
+                </MotiView>
+              </View>
+            </MotiView>
           </MotiView>
-        </MotiView>
-      )}
-    </AnimatePresence>
+        )}
+      </AnimatePresence>
+    </>
   );
 }
 
@@ -88,7 +109,10 @@ export default memo(VideoControl);
 
 const styles = StyleSheet.create({
   overlay: {
-    ...StyleSheet.absoluteFill,
+    position: "absolute",
+    width: "100%",
+    bottom: 0,
+    height: "25%",
     backgroundColor: "rgba(0,0,0,.28)",
     justifyContent: "space-between",
   },
@@ -97,7 +121,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    gap: 28,
+    gap: 18,
+    marginTop: -20,
   },
 
   playButton: {
@@ -109,15 +134,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 
-  bottomContainer: {
-    paddingHorizontal: 16,
-    gap: 8,
-  },
-
   bottomButtons: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 4,
   },
 });
