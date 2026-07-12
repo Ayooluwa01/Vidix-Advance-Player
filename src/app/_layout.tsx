@@ -9,7 +9,7 @@ import {
   StatusBar,
   useWindowDimensions,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "../../global.css";
 
 function AppNavigator() {
@@ -35,29 +35,28 @@ function AppNavigator() {
   }, []);
 
   return (
-    <>
+    <GestureHandlerRootView style={{ flex: 1 }}>
       <StatusBar
         barStyle={theme === "dark" ? "light-content" : "default"}
         backgroundColor={bgColor}
         translucent
       />
 
-      <SafeAreaView edges={["top", "bottom"]} className="flex-1">
-        <Stack
-          screenOptions={{
-            headerShown: false,
-            contentStyle: {
-              backgroundColor: "transparent",
-            },
-          }}
-        >
-          <Stack.Screen name="index" />
-          <Stack.Screen name="(onboarding)" />
-          <Stack.Screen name="(tabs)" />
-          <Stack.Screen name="(splash)" />
-        </Stack>
-      </SafeAreaView>
-    </>
+      <Stack
+        screenOptions={{
+          headerShown: false,
+          contentStyle: {
+            backgroundColor: "transparent",
+          },
+        }}
+      >
+        <Stack.Screen name="index" />
+        <Stack.Screen name="(onboarding)" />
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="(splash)" />
+        <Stack.Screen name="(videoplayer)" />
+      </Stack>
+    </GestureHandlerRootView>
   );
 }
 

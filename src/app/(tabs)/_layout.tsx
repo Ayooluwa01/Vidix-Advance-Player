@@ -4,6 +4,7 @@ import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import { Animated, Pressable, Text, useColorScheme, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const TabNav = [
   {
@@ -226,50 +227,52 @@ export default function TabsLayout() {
 
   return (
     <Themeproviders>
-      <View
-        style={{
-          flex: 1,
-          backgroundColor: "transparent",
-          paddingHorizontal: 1,
-        }}
-      >
-        <Tabs
-          screenOptions={{
-            headerShown: false,
-            sceneStyle: {
-              backgroundColor: "transparent",
-            },
-
-            tabBarStyle: {
-              position: "absolute",
-              borderTopWidth: 0,
-
-              elevation: 0,
-            },
+      <SafeAreaView edges={["top", "bottom"]} className="flex-1">
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: "transparent",
+            paddingHorizontal: 1,
           }}
-          tabBar={(props) => (
-            <CustomTabBar
-              {...props}
-              accentColor={accentColor}
-              inactiveColor={inactiveColor}
-              surfaceColor={surfaceColor}
-              borderColor={borderColor}
-            />
-          )}
         >
-          {TabNav.map((tab) => (
-            <View style={{ padding: 12 }}>
-              <Tabs.Screen
-                key={tab.name}
-                name={tab.name}
-                options={{
-                  title: tab.title,
-                }}
+          <Tabs
+            screenOptions={{
+              headerShown: false,
+              sceneStyle: {
+                backgroundColor: "transparent",
+              },
+
+              tabBarStyle: {
+                position: "absolute",
+                borderTopWidth: 0,
+
+                elevation: 0,
+              },
+            }}
+            tabBar={(props) => (
+              <CustomTabBar
+                {...props}
+                accentColor={accentColor}
+                inactiveColor={inactiveColor}
+                surfaceColor={surfaceColor}
+                borderColor={borderColor}
               />
-            </View>
-          ))}
-        </Tabs>
-      </View>
+            )}
+          >
+            {TabNav.map((tab) => (
+              <View style={{ padding: 12 }}>
+                <Tabs.Screen
+                  key={tab.name}
+                  name={tab.name}
+                  options={{
+                    title: tab.title,
+                  }}
+                />
+              </View>
+            ))}
+          </Tabs>
+        </View>
+      </SafeAreaView>
     </Themeproviders>
   );
 }

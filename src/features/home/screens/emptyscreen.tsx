@@ -3,6 +3,7 @@ import ReusableButtons from "@/components/reusables/Buttons";
 import { ReusableText } from "@/components/reusables/Text";
 import { getColor } from "@/constants/colors";
 import { useThemeStore } from "@/store/useThemeStore";
+import { useVideoStore } from "@/store/video-scanner";
 import { Feather, FontAwesome } from "@expo/vector-icons";
 import { ScrollView, StyleSheet, View } from "react-native";
 
@@ -12,7 +13,7 @@ const EmptyScreen = () => {
   const accentColor = getColor(theme, "accent");
   const accentSoftColor = getColor(theme, "accentSoft");
   const bgColor = getColor(theme, "background");
-
+  const { loadMoreVideos } = useVideoStore();
   return (
     <ScrollView
       contentContainerStyle={{ flexGrow: 1 }}
@@ -58,7 +59,7 @@ const EmptyScreen = () => {
           </ReusableText>
 
           {/* Buttons Container */}
-          <View style={styles.buttonsContainer}> 
+          <View style={styles.buttonsContainer}>
             {/* Scan Device Button */}
             <ReusableButtons
               variants="big"

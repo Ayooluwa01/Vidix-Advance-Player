@@ -5,7 +5,7 @@ import {
 } from "@react-native-camera-roll/camera-roll";
 import { create } from "zustand";
 
-const PAGE_SIZE = 40;
+const PAGE_SIZE = 3;
 
 interface VideoStore {
   videos: PhotoIdentifier[];
@@ -67,7 +67,6 @@ export const useVideoStore = create<VideoStore>((set, get) => ({
         ],
       });
 
-      console.log(result.edges);
       set({
         videos: result.edges,
         hasNextPage: result.page_info.has_next_page,
@@ -92,6 +91,7 @@ export const useVideoStore = create<VideoStore>((set, get) => ({
     set({
       isLoadingMore: true,
     });
+    console.log("loading more videos");
     try {
       const result = await CameraRoll.getPhotos({
         first: PAGE_SIZE,

@@ -12,9 +12,14 @@ export const ReusableText = ({
   variants,
   className,
   style,
+  ...props
 }: textProps) => {
   return (
-    <Text className={twMerge(TextVariants[variants], className)} style={style}>
+    <Text
+      className={twMerge(TextVariants[variants], className)}
+      style={style}
+      {...props}
+    >
       {children}
     </Text>
   );
