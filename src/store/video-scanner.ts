@@ -5,7 +5,7 @@ import {
 } from "@react-native-camera-roll/camera-roll";
 import { create } from "zustand";
 
-const PAGE_SIZE = 3;
+const PAGE_SIZE = 55;
 
 interface VideoStore {
   videos: PhotoIdentifier[];
