@@ -1,6 +1,8 @@
 import { ReusableText } from "@/components/reusables/Text";
 import { getColor } from "@/constants/colors";
+import { getRecentVideos, saveRecentVideo } from "@/store/mmkv/storage";
 import { usePlayerStore } from "@/store/playerstore";
+import { useRecentVideos } from "@/store/RecentVideos";
 import { useThemeStore } from "@/store/useThemeStore";
 import { useVideoStore } from "@/store/video-scanner";
 import { formatDuration, formatRelativeTime } from "@/utils/formatter";
@@ -22,6 +24,7 @@ interface VideoCardProps {
 function VideoCard({ item, index, onPress, onMenuPress }: VideoCardProps) {
   const theme = useThemeStore((state) => state.theme);
   const setPlaylist = usePlayerStore((state) => state.setPlaylist);
+  const recentVideos = getRecentVideos();
 
   const video = item.node.image;
 
@@ -49,9 +52,12 @@ function VideoCard({ item, index, onPress, onMenuPress }: VideoCardProps) {
       onPress(item);
       return;
     }
-    console.log(video);
     const videos = useVideoStore.getState().videos;
+    // console.log(JSON.stringify(item, null, 2));
 
+    // Save Recently to mmkv store
+    saveRecentVideo(item);
+    useRecentVideos.getState().loadRecentVideos();
     setPlaylist(videos, index);
 
     router.push("/(videoplayer)");

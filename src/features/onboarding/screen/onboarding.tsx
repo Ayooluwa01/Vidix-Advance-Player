@@ -16,6 +16,7 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const Data: {
   imagepoisiton: DimensionValue;
@@ -53,7 +54,7 @@ const OnboardCard = ({ theme, width }: { theme: string; width: number }) => {
   const [step, setStep] = useState(0);
   const scrollViewRef = useRef<ScrollView>(null);
   const router = useRouter();
-
+  const insets = useSafeAreaInsets();
   const handleNext = useCallback(() => {
     const nextStep = Math.min(step + 1, Data.length - 1);
     scrollViewRef.current?.scrollTo({ x: nextStep * width, animated: true });
@@ -168,7 +169,10 @@ const OnboardCard = ({ theme, width }: { theme: string; width: number }) => {
       </View>
 
       {/* Button Row -  */}
-      <View className="flex-row justify-between items-center w-full px-4 py-6">
+      <View
+        className="flex-row justify-between items-center w-full px-4 py-6"
+        style={{ bottom: insets.bottom }}
+      >
         {/* Back Button */}
         {!isFirstSlide && (
           <TouchableOpacity

@@ -1,5 +1,6 @@
 import { getColor } from "@/constants/colors";
 import { storage } from "@/store/mmkv/storage";
+import { useRecentVideos } from "@/store/RecentVideos";
 import { useThemeStore } from "@/store/useThemeStore";
 import { useVideoStore } from "@/store/video-scanner";
 import { Stack } from "expo-router";
@@ -18,6 +19,7 @@ function AppNavigator() {
   const bgColor = getColor(theme, "background");
   const loadVideos = useVideoStore((state) => state.loadVideos);
   const loaded = useVideoStore((state) => state.loaded);
+  const loadRecentVideos = useRecentVideos((state) => state.loadRecentVideos);
   useEffect(() => {
     storage.set("device-height", height);
     storage.set("device-width", width);
@@ -29,10 +31,11 @@ function AppNavigator() {
       // if no video has been loaded
       if (!loaded) {
         loadVideos();
+        loadRecentVideos();
       }
     });
     return () => task.cancel();
-  }, []);
+  }, [loaded, loadVideos, loadRecentVideos]);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>

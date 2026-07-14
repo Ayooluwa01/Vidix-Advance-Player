@@ -41,10 +41,9 @@ function VideoControl({ foward, backward }: VideoControlProps) {
       setMute: s.setMute,
     })),
   );
-
+  console.log("muted", muted);
   const [optionsVisible, setOptionsVisible] = useState(false);
 
-  // TODO: move looping/pip into playerStore if they need to persist
   const [looping, setLooping] = useState(false);
   const [pipActive, setPipActive] = useState(false);
 
