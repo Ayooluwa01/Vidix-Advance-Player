@@ -4,7 +4,8 @@ import { getColor } from "@/constants/colors";
 import { VideoPlaybackEntry } from "@/store/mmkv/storage";
 import { useRecentVideos } from "@/store/RecentVideos";
 import { useThemeStore } from "@/store/useThemeStore";
-import { useCallback, useEffect, useMemo } from "react";
+import { useFocusEffect } from "expo-router";
+import { useCallback, useMemo } from "react";
 import { FlatList, Pressable, View } from "react-native";
 
 const RecentlyPlayed = () => {
@@ -13,12 +14,14 @@ const RecentlyPlayed = () => {
   const loadRecentVideos = useRecentVideos((state) => state.loadRecentVideos);
   const primaryColor = useMemo(() => getColor(theme, "primary"), [theme]);
 
-  useEffect(() => {
-    loadRecentVideos();
-  }, [loadRecentVideos]);
+  useFocusEffect(
+    useCallback(() => {
+      loadRecentVideos();
+    }, [loadRecentVideos]),
+  );
 
   const keyExtractor = useCallback(
-    (item: VideoPlaybackEntry) => item.video.node.image.uri,
+    (item: VideoPlaybackEntry) => item.video.node.id,
     [],
   );
 

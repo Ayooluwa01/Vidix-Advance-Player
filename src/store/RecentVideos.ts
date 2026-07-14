@@ -7,7 +7,7 @@ interface RecentVideos {
 }
 
 export const useRecentVideos = create<RecentVideos>((set) => ({
-  recentlyPlayed: [],
+  recentlyPlayed: getRecentVideos(),
 
   loadRecentVideos: () => {
     try {

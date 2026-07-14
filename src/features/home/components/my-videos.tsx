@@ -5,10 +5,13 @@ import { useThemeStore } from "@/store/useThemeStore";
 import { useVideoStore } from "@/store/video-scanner";
 import { Ionicons } from "@expo/vector-icons";
 import { PhotoIdentifier } from "@react-native-camera-roll/camera-roll";
+import { AnimatePresence, MotiView } from "moti";
 import { memo, useCallback, useMemo, useState } from "react";
 import { FlatList, Pressable, View } from "react-native";
 import ContinueWatching from "./continue-watching";
 import RecentlyPlayed from "./recently-played";
+
+const STAGGER_LIMIT = 12;
 
 const MyVideos = () => {
   const videos = useVideoStore((state) => state.videos);
@@ -24,10 +27,28 @@ const MyVideos = () => {
   const ListHeader = useCallback(
     () => (
       <View>
-        <ContinueWatching />
-        <RecentlyPlayed />
+        <MotiView
+          from={{ opacity: 0, translateY: -12 }}
+          animate={{ opacity: 1, translateY: 0 }}
+          transition={{ type: "timing", duration: 350 }}
+        >
+          <ContinueWatching />
+        </MotiView>
 
-        <View className="flex flex-row items-center justify-between px-4 mb-2">
+        <MotiView
+          from={{ opacity: 0, translateY: -12 }}
+          animate={{ opacity: 1, translateY: 0 }}
+          transition={{ type: "timing", duration: 350, delay: 80 }}
+        >
+          <RecentlyPlayed />
+        </MotiView>
+
+        <MotiView
+          from={{ opacity: 0, translateY: -8 }}
+          animate={{ opacity: 1, translateY: 0 }}
+          transition={{ type: "timing", duration: 300, delay: 140 }}
+          className="flex flex-row items-center justify-between px-4 mb-2"
+        >
           <ReusableText
             variants="heading"
             style={{
@@ -55,13 +76,42 @@ const MyVideos = () => {
               Newest
             </ReusableText>
 
-            <Ionicons
-              name={sortMenuOpen ? "chevron-up" : "chevron-down"}
-              size={18}
-              color={primaryColor}
-            />
+            <MotiView
+              animate={{ rotate: sortMenuOpen ? "180deg" : "0deg" }}
+              transition={{ type: "timing", duration: 200 }}
+            >
+              <Ionicons name="chevron-down" size={18} color={primaryColor} />
+            </MotiView>
           </Pressable>
-        </View>
+        </MotiView>
+
+        <AnimatePresence>
+          {sortMenuOpen && (
+            <MotiView
+              from={{ opacity: 0, scale: 0.95, translateY: -6 }}
+              animate={{ opacity: 1, scale: 1, translateY: 0 }}
+              exit={{ opacity: 0, scale: 0.95, translateY: -6 }}
+              transition={{ type: "timing", duration: 200 }}
+              className="mx-4 mb-3 rounded-2xl overflow-hidden"
+              style={{ backgroundColor: `${primaryColor}12` }}
+            >
+              {["Newest", "Oldest", "Longest", "Shortest"].map((label, i) => (
+                <Pressable
+                  key={label}
+                  className="px-4 py-3"
+                  onPress={() => setSortMenuOpen(false)}
+                >
+                  <ReusableText
+                    variants="body"
+                    style={{ color: primaryColor, fontSize: 14 }}
+                  >
+                    {label}
+                  </ReusableText>
+                </Pressable>
+              ))}
+            </MotiView>
+          )}
+        </AnimatePresence>
       </View>
     ),
     [primaryColor, sortMenuOpen, toggleSort],
@@ -69,7 +119,21 @@ const MyVideos = () => {
 
   const renderItem = useCallback(
     ({ item, index }: { item: PhotoIdentifier; index: number }) => (
-      <VideoCard item={item} index={index} />
+      <MotiView
+        from={{
+          opacity: 0,
+          translateY: 16,
+        }}
+        animate={{ opacity: 1, translateY: 0 }}
+        transition={{
+          type: "timing",
+          duration: 300,
+          delay: index < STAGGER_LIMIT ? index * 40 : 0,
+        }}
+        style={{ flex: 1 }}
+      >
+        <VideoCard item={item} index={index} />
+      </MotiView>
     ),
     [],
   );

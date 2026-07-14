@@ -4,8 +4,8 @@ import { VideoPlaybackEntry } from "@/store/mmkv/storage";
 import { useThemeStore } from "@/store/useThemeStore";
 import { formatDuration } from "@/utils/formatter";
 import { Image } from "expo-image";
-import { memo, useCallback, useMemo } from "react";
-import { Pressable, StyleSheet, View } from "react-native";
+import { memo, useMemo } from "react";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 
 interface ContinueWatchingCardProps {
   entry: VideoPlaybackEntry;
@@ -15,7 +15,6 @@ interface ContinueWatchingCardProps {
 function ContinueWatchingCard({ entry, onPress }: ContinueWatchingCardProps) {
   const theme = useThemeStore((state) => state.theme);
   const video = entry.video.node.image;
-
   const primaryColor = useMemo(() => getColor(theme, "primary"), [theme]);
   const secondaryColor = useMemo(() => getColor(theme, "secondary"), [theme]);
 
@@ -34,13 +33,8 @@ function ContinueWatchingCard({ entry, onPress }: ContinueWatchingCardProps) {
     [durationMillis, entry.positionMillis],
   );
 
-  const handlePress = useCallback(() => {
-    onPress?.(entry);
-    // router.push("/(videoplayer)"); — should resume from entry.positionMillis
-  }, [entry, onPress]);
-
   return (
-    <Pressable style={styles.wrapper} onPress={handlePress}>
+    <TouchableOpacity style={styles.wrapper} onPress={() => onPress?.(entry)}>
       <View style={styles.imageContainer}>
         <Image
           source={{ uri: video.uri }}
@@ -79,7 +73,7 @@ function ContinueWatchingCard({ entry, onPress }: ContinueWatchingCardProps) {
       >
         {remaining} left
       </ReusableText>
-    </Pressable>
+    </TouchableOpacity>
   );
 }
 

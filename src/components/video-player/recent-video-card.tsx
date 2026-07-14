@@ -37,10 +37,10 @@ function RecentVideoCard({ item, onPress }: RecentVideoCardProps) {
     <Pressable style={styles.wrapper} onPress={handlePress}>
       <View style={styles.imageContainer}>
         <Image
-          source={{ uri: video.uri }}
+          source={{ uri: video.filename }}
           contentFit="cover"
           style={styles.image}
-          recyclingKey={video.uri}
+          recyclingKey={video.filename}
         />
 
         <View style={styles.duration}>

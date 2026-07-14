@@ -2,8 +2,11 @@ import { ReusableText } from "@/components/reusables/Text";
 import ContinueWatchingCard from "@/components/video-player/continue-watching-card";
 import { getColor } from "@/constants/colors";
 import { useContinueWatching } from "@/store/continueWatching";
+import { VideoPlaybackEntry } from "@/store/mmkv/storage";
+import { usePlayerStore } from "@/store/playerstore";
 import { useThemeStore } from "@/store/useThemeStore";
-import { useEffect, useMemo } from "react";
+import { router, useFocusEffect } from "expo-router";
+import { useCallback, useMemo } from "react";
 import { View } from "react-native";
 
 const ContinueWatching = () => {
@@ -15,10 +18,21 @@ const ContinueWatching = () => {
     (state) => state.loadContinueWatching,
   );
   const primaryColor = useMemo(() => getColor(theme, "primary"), [theme]);
+  const playFromEntry = usePlayerStore((state) => state.playFromEntry);
 
-  useEffect(() => {
-    loadContinueWatching();
-  }, [loadContinueWatching]);
+  useFocusEffect(
+    useCallback(() => {
+      loadContinueWatching();
+    }, [loadContinueWatching]),
+  );
+
+  const handlePress = useCallback(
+    (entry: VideoPlaybackEntry) => {
+      playFromEntry(entry.video, entry.positionMillis);
+      router.push("/(videoplayer)");
+    },
+    [playFromEntry],
+  );
 
   if (!continueWatching) {
     return null;
@@ -40,7 +54,7 @@ const ContinueWatching = () => {
       </View>
 
       <View style={{ paddingHorizontal: 16 }}>
-        <ContinueWatchingCard entry={continueWatching} />
+        <ContinueWatchingCard entry={continueWatching} onPress={handlePress} />
       </View>
     </View>
   );
